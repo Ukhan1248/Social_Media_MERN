@@ -6,7 +6,6 @@ import {
   Grid,
   Typography,
   Container,
-  TextField,
 } from "@material-ui/core";
 import { GoogleLogin } from "react-google-login";
 
@@ -16,6 +15,8 @@ import { useHistory } from "react-router-dom";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import useStyles from "./styles";
 import Input from "./Input";
+import { signin, signup } from "../../actions/auth";
+import Icon from "./icon";
 
 const initialState = {
   firstName: "",
@@ -32,6 +33,7 @@ const Auth = () => {
   const [formData, setFormData] = useState();
   const dispatch = useDispatch();
   const history = useHistory();
+  const [form, setForm] = useState(initialState);
 
   const handleShowPassword = () =>
     setShowPassword(prevShowPassword => !prevShowPassword);
@@ -39,15 +41,21 @@ const Auth = () => {
   const handleSubmit = e => {
     e.preventDefault();
 
-    console.log(formData);
+    if (isSignup) {
+      dispatch(signup(formData, history));
+    } else {
+      dispatch(signin(formData, history));
+    }
   };
+
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const switchMode = () => {
+    setForm(initialState);
     setIsSignup(prevIsSignup => !prevIsSignup);
-    handleShowPassword(false);
+    setShowPassword(false);
   };
 
   const googleSuccess = async res => {
@@ -76,7 +84,7 @@ const Auth = () => {
         <form className={classes.form} onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             {isSignup && (
-              <>
+              <div>
                 <Input
                   name="firstName"
                   label="First Name"
@@ -90,7 +98,7 @@ const Auth = () => {
                   handleChange={handleChange}
                   half
                 />
-              </>
+              </div>
             )}
             <Input
               name="email"
@@ -132,6 +140,7 @@ const Auth = () => {
                 fullWidth
                 onClick={renderProps.onClick}
                 disabled={renderProps.disabled}
+                startIcon={<Icon />}
                 variant="contained"
               >
                 Google Sign In
