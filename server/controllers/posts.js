@@ -20,7 +20,7 @@ export const getPosts = async (req, res) => {
       .limit(LIMIT)
       .skip(startIndex);
 
-    res.status(200).json({
+    res.json({
       data: posts,
       currentPage: Number(page),
       numberofPage: Math.ceil(total / LIMIT),
@@ -147,12 +147,9 @@ export const likePost = async (req, res) => {
     post.likes = post.likes.filter(id => id !== String(req.userId));
   }
 
-  const updatedPost = await PostMessage.findByIdAndUpdate(
-    id,
-    post,
-    { likeCount: post.likeCount + 1 },
-    { new: true }
-  );
+  const updatedPost = await PostMessage.findByIdAndUpdate(id, post, {
+    new: true,
+  });
 
   res.status(200).json(updatedPost);
 };
